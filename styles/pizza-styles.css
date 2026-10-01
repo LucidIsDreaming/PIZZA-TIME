@@ -36,8 +36,8 @@ body {
 
 #contact-button {
     border: none;
-    background-color: darkgreen;
-    border-color: darkgreen;
+    background-color: rgb(0, 89, 0);
+    border-color: rgb(91, 255, 91);
     padding: .5rem .75rem;
     border-radius: .25rem;
     text-decoration: none;
@@ -46,10 +46,39 @@ body {
 }
 
 /*Contact info*/
-input [type = "text"], input [type = "email"] {
+
+#pizza-form{
+    border-color: rgb(87, 188, 87);
+}
+
+input [type = "text"], input [type = "email"], select, textarea{
     width: 100%;
-    border: 1px solid rgb(204, 255, 116);
+    border: 1px solid rgb(37, 171, 0);
     border-radius: .25em;
     margin: 0rem 0rem 1rem 0rem;
     padding: .75rem;
+}
+
+/* customizing the legend and fieldset*/
+legend {
+    color: darkgreen;
+    font-variant: small-caps;
+    font-size: 1.5;
+    padding-left: 1rem;
+    width: 100%;
+}
+
+fieldset {
+    border: 1px solid darkgreen;
+    padding: 1rem; 
+    margin-bottom: 1.25rem;
+}
+
+label {
+    display: block;
+    padding-bottom: 0.5rem;
+}
+
+textarea{
+    resize:  none;
 }
