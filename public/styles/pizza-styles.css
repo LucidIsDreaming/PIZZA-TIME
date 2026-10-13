@@ -45,6 +45,11 @@ body {
     font-size: 1rem;
 }
 
+.err{
+    color: red;
+    display: none;
+}
+
 /*Contact info*/
 
 #pizza-form{

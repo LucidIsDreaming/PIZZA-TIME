@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
     
     //res.send('Welcome to Poppa\'s Pizza');
 
-    res.sendFile(`$(import.meta.dirname}/views/home.html`);
+    res.sendFile(`${import.meta.dirname}/views/home.html`);
 
 });
 
