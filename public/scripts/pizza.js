@@ -21,6 +21,14 @@ function validateForm(){
         isValid = false;
     } 
 
+
+    let email = document.getElementById("email").value.trim();
+    if (lname === ""){
+        document.getElementById("err-email").style.display = "block";
+        isValid = false;
+    }
+
+
     //Do not submit the form if the data is in-valid
 
     return isValid;
