@@ -22,6 +22,23 @@ app.get('/', (req, res) => {
 
 });
 
+// Add a contact route to display a contact page
+app.get('/contact-us', (req, res) => {
+    res.sendFile(`${import.meta.dirname}/views/contact.html`);
+});
+
+//confirmation route
+app.get('/confirm-order', (req, res) => {
+    res.sendFile(`${import.meta.dirname}/views/confirm.html`);
+});
+
+//menu route
+app.get('/our-menu', (req, res) => {
+    res.sendFile(`${import.meta.dirname}/views/confirm.html`);
+});
+
+
+
 //Start the server on the designated PORT
 app.listen(PORT, () => {
 
