@@ -9,6 +9,15 @@ const app = express();
 //our server to listen on 
 const PORT = 3000;
 
+// Allow the app to parse data
+// This is "middleware" that allows Express to read
+// form submissions and store them in req.body
+app.use(express.urlencoded({extended: true}));
+
+//Create an array to store our orders in memory
+//They will be lost when the server restarts
+const order =[];
+
 //Enable static file serving
 app.use(express.static('public'));
 
@@ -36,6 +45,33 @@ app.get('/confirm-order', (req, res) => {
 app.get('/our-menu', (req, res) => {
     res.sendFile(`${import.meta.dirname}/views/confirm.html`);
 });
+
+//Add a route for the form submission
+app.post('/submit-order', (req, res) => {
+
+    //Create a JSON object to store the order data
+    const order = req.body;
+    order['timestamp'] = new Date();
+       /* fname: req.body.fname,
+        lname: req.body.lname,
+        email:req.body.email,
+        method:req.body.method,
+
+        toppings: req.body.toppings,
+        size: req.body.size,
+
+        comment: req.body.comment,
+        timestamp:newDate()
+        */
+    console.log(order);
+    //add the order object to our orders array
+    orders.push(order);
+    console.log(orders);
+
+    //Direct the user to the confirmation page
+    res.sendFile(`${import.meta.dirname}/views/confirm.html`);
+
+    });
 
 
 
