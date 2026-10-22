@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended: true}));
 
 //Create an array to store our orders in memory
 //They will be lost when the server restarts
-const order =[];
+const orders =[];
 
 //Enable static file serving
 app.use(express.static('public'));
@@ -51,7 +51,10 @@ app.post('/submit-order', (req, res) => {
 
     //Create a JSON object to store the order data
     const order = req.body;
-    order['timestamp'] = new Date();
+    order.timestamp = new Date();
+
+    console.log(order);
+
        /* fname: req.body.fname,
         lname: req.body.lname,
         email:req.body.email,
@@ -63,12 +66,12 @@ app.post('/submit-order', (req, res) => {
         comment: req.body.comment,
         timestamp:newDate()
         */
-    console.log(order);
+
     //add the order object to our orders array
     orders.push(order);
     console.log(orders);
 
-    //Direct the user to the confirmation page
+    //Display the confirmation page
     res.sendFile(`${import.meta.dirname}/views/confirm.html`);
 
     });
