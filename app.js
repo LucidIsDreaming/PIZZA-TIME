@@ -36,7 +36,7 @@ app.get('/contact-us', (req, res) => {
     res.sendFile(`${import.meta.dirname}/views/contact.html`);
 });
 
-//confirmation route
+//Add an order confirmation route
 app.get('/confirm-order', (req, res) => {
     res.sendFile(`${import.meta.dirname}/views/confirm.html`);
 });
@@ -75,6 +75,12 @@ app.post('/submit-order', (req, res) => {
     res.sendFile(`${import.meta.dirname}/views/confirm.html`);
 
     });
+
+    //Add an admin route
+    app.get('/admin', (req, res) => {
+        res.send(orders);
+    });
+
 
 
 
