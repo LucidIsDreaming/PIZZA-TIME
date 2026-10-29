@@ -14,6 +14,9 @@ const PORT = 3000;
 // form submissions and store them in req.body
 app.use(express.urlencoded({extended: true}));
 
+//Set view engine to EJS
+app.set('view engine', 'ejs');
+
 //Create an array to store our orders in memory
 //They will be lost when the server restarts
 const orders =[];
@@ -25,24 +28,25 @@ app.use(express.static('public'));
 //Define a default route ("/")
 app.get('/', (req, res) => {
     
-    //res.send('Welcome to Poppa\'s Pizza');
+    res.render('home');
    
 });
 
 // Add a contact route to display a contact page
 app.get('/contact-us', (req, res) => {
-    res.sendFile(`${import.meta.dirname}/views/contact.html`);
+    res.render(`contact`);
 });
-
+/*
 //Add an order confirmation route
 app.get('/confirm-order', (req, res) => {
-    res.sendFile(`${import.meta.dirname}/views/confirm.html`);
+    res.render(`confirm`);
 });
 
 //menu route
 app.get('/our-menu', (req, res) => {
-    res.sendFile(`${import.meta.dirname}/views/confirm.html`);
+    res.render(`menu`);
 });
+*/
 
 //Add a route for the form submission
 app.post('/submit-order', (req, res) => {
@@ -70,13 +74,13 @@ app.post('/submit-order', (req, res) => {
     console.log(orders);
 
     //Display the confirmation page
-    res.sendFile(`${import.meta.dirname}/views/confirm.html`);
+    res.render(`confirm`, {order});
 
     });
 
     //Add an admin route
     app.get('/admin', (req, res) => {
-        res.send(orders);
+        res.render('admin', {orders});
     });
 
 
