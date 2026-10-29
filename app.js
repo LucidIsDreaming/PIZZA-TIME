@@ -26,9 +26,7 @@ app.use(express.static('public'));
 app.get('/', (req, res) => {
     
     //res.send('Welcome to Poppa\'s Pizza');
-
-    res.sendFile(`${import.meta.dirname}/views/home.html`);
-
+   
 });
 
 // Add a contact route to display a contact page
