@@ -17,7 +17,6 @@
     <table id = "order-table" class = "display">
         <thead>
             <tr>
-                <th>Date/Time</th>
                 <th>First&Last name</th>
                 <th>Email</th>
                 <th>Method</th>
@@ -29,7 +28,6 @@
         <tbody>
     <% orders.forEach(order => { %>
         <tr>
-            <td><%= order.timestamp.toLocaleString() %></td>
             <td><%= order.fname %> <% order.lname %></td>
             <td><%= order.email %></td>
             <td><%= order.method %></td>
