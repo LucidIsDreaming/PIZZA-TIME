@@ -1,309 +1,124 @@
 // Import the express module
 import express from 'express';
 
-// Import the mysql2 module
-// mysql2 allows Node.js to communicate with a MySQL database
+// Import mysql
 import mysql2 from 'mysql2';
 
+// Import .env
 import dotenv from 'dotenv';
-
-// Load environment variables from .env file
-// This MUST be called before accessing process.env
 dotenv.config();
 
-
-/* ==================== DATABASE CONNECTION POOL ====================
-
-
- * Create a CONNECTION POOL to the database
- * A "pool" is like a bucket of ready-to-use database connections.
- * Instead of creating a new connection every time we need to talk
- * to the database (which is slow), we create several connections
- * upfront and reuse them. This makes our app much faster.
- * 
- * .promise() converts the pool to use modern JavaScript Promises
-* This allows us to use 'async/await' syntax which simplifies our code.
- */
-
-
-// MODIFY your CONNECTION POOL to the database
-// Now using environment variables from the .env file
-// process.env.VARIABLE_NAME accesses variables from .env
-
-
+// Create a connection pool
 const pool = mysql2.createPool({
-
-
-    // These values come from the .env file
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT
-
-
 }).promise();
 
-
-//Create and instance of an 
-//express application
+// Create an instance of an
+// express application
 const app = express();
 
-//Define a port number for
-//our server to listen on 
+// Define a port number for
+// our server to listen on
 const PORT = 3000;
 
-// Allow the app to parse data
-// This is "middleware" that allows Express to read
-// form submissions and store them in req.body
-app.use(express.urlencoded({extended: true}));
+// Create an array to store orders
+const orders = [];
 
-//Set view engine to EJS
-app.set('view engine', 'ejs');
-
-//Create an array to store our orders in memory
-//They will be lost when the server restarts
-const orders =[];
-
-//Enable static file serving
+// Enable static file serving
 app.use(express.static('public'));
 
-// // Database test - http://localhost:3000/db-test to test this route
-// app.get('/db-test', async(req, res) => {
+// Add "middleware" to allow the app to parse form data
+// Access form data through req.body
+app.use(express.urlencoded({ extended: true }));
 
+// Set view engine to EJS
+app.set('view engine', 'ejs');
 
-//     /* 
-//      * 'async' tells JavaScript that this function will do asynchronous work
-//      * Asynchronous means "it takes time to complete" (like waiting for
-//      * database). By marking it 'async', we can use 'await' inside it
-//      * 
-//      * 'await' keyword means "pause here and wait for the database to respond"
-//      * pool.query() returns a Promise ("I'll get back to you!")
-//      * 'await' waits for the Promise to complete before moving on
-//      * 
-//      * pool.query() returns an ARRAY with 2 items:
-//      *   [0] = the actual data rows from the database
-//      *   [1] = metadata about the query (field names, types, etc.)
-//      * So 'orders[0]' contains just the data rows, like:
-//      * [ {id: 1, customer: 'John', pizza: 'Pepperoni'}, 
-//      *   {id: 2, customer: 'Jane', pizza: 'Veggie'} ]
-//      */
-
-
-//     // try/catch block for error handling
-//     try {
-
-
-//         const orders = await pool.query('SELECT * FROM orders');
-
-
-//         // Send the orders data back to the browser as JSON
-//         res.send(orders[0]);
-
-
-//     } catch(err) {
-
-
-//         // If ANY error happened in the 'try' block, this code runs
-//         // Log the error to the server console (for developers to see)
-//         console.error('Database error:', err);
-
-
-//         // Send an error response to the browser
-//         // status(500) means "Internal Server Error"
-//         res.status(500).send('Database error: ' + err.message);
-//     }
-// });
-
-
-//Define a default route ("/")
-app.get('/', (req, res) => {
-    
-    res.render('home');
-   
-});
-
-// Add a contact route to display a contact page
-app.get('/contact-us', (req, res) => {
-    res.render(`contact`);
-});
+// Create a route to test the database
 /*
-//Add an order confirmation route
-app.get('/confirm-order', (req, res) => {
-    res.render(`confirm`);
-});
-
-//menu route
-app.get('/our-menu', (req, res) => {
-    res.render(`menu`);
+app.get('/db-test', async(req, res) => {
+    try {
+        const [orders] = await 
+            pool.query('SELECT * FROM orders');
+        res.send(orders);
+    } catch(err) {
+        console.error('Database error: ', err);
+        res.status(500).send('Database error occurred.');
+    }
 });
 */
 
-// //Add a route for the form submission
-// app.post('/submit-order', (req, res) => {
+// Define a default route ("/")
+app.get('/', (req, res) => {
+    //res.send('Welcome to Poppa\'s Pizza');
+    res.render('home');
+});
 
-//     //Create a JSON object to store the order data
-//     const order = req.body;
-//     order.timestamp = new Date();
+// Add a contact route to display a contact view page
+app.get('/contact-us', (req, res) => {
+    res.render('contact');
+});
 
-//     console.log(order);
-
-//        /* fname: req.body.fname,
-//         lname: req.body.lname,
-//         email:req.body.email,
-//         method:req.body.method,
-
-//         toppings: req.body.toppings,
-//         size: req.body.size,
-
-//         comment: req.body.comment,
-//         timestamp:newDate()
-//         */
-
-//     //add the order object to our orders array
-//     orders.push(order);
-//     console.log(orders);
-
-//     //Display the confirmation page
-//     res.render(`confirm`, {order});
-
-//     });
-
-//NEW SUBMIT ROUTE
-// Add a route for the form submission
-// This handles POST requests to /submit-order (when the user submits the 
-// pizza order form)
-
-
+// Add a route to process a pizza order
 app.post('/submit-order', async(req, res) => {
 
+    // Create a JSON object to store order data
+    const order = req.body;
+    order.timestamp = new Date();
+    console.log(order);
 
-    // Wrap everything in try/catch to handle potential database errors
-    try {
+    // Convert toppings array to a comma-delimited string
+    order.toppings = Array.isArray(order.toppings) ?
+        order.toppings.join(", ") : "";
 
+    // Define an SQL query to INSERT new order
+    const sql = `INSERT INTO orders (fname, lname, email,
+    size, method, toppings, comment)
+    VALUES(?, ?, ?, ?, ?, ?, ?)`;
 
-        // Get the order data from the form submission
-        // req.body contains all the form fields (fname, lname, email, etc.)
-        const order = req.body;
+    // Create an array of parameters from order data
+    const params = [
+        order.fname,
+        order.lname,
+        order.email,
+        order.size,
+        order.method,
+        order.toppings,
+        order.comment
+    ];
 
-        order.timestamp = new Date();
-        console.log(order)
+    // Execute the query
+    const [result] = await pool.execute(sql, params);
 
+    // Get the id from the newly inserted row
+    order.id = result.insertId;
+    console.log("A new row was inserted with ID " + order.id);
 
-        // Convert the toppings array into a comma-separated string
-        // HTML checkboxes submit as an array, but MySQL stores as TEXT
-        order.toppings = Array.isArray(order.toppings) ? 
-	        order.toppings.join(", ") : "";
-
-
-        // Log the order to the server console (helpful for debugging)
-        console.log('New order received:', order);
-
-
-        // Define an SQL INSERT query
-        // The ? are PLACEHOLDERS that will be replaced with actual values
-        // This prevents SQL injection (a common security vulnerability)
-
-
-
-        const sql = `INSERT INTO orders 
-                     (fname, lname, email, size, method, toppings, comment) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?)`;
-
-
-        // Create an array of parameters for each ? placeholder in order
-        const params = [
-            order.fname,
-            order.lname,
-            order.email,
-            order.size,
-            order.method,
-            order.toppings,
-            order.comment
-        ];
-
-
-        // Execute the query with the parameters
-        const [result] = await pool.execute(sql, params);
-
-        // Get the id from newly inserted row
-        order.id = result.insertId;
-        console.log("A new row awas inserted with ID " + order.id);
-
-        // Optional: You can access the newly inserted row's ID
-        console.log('Order inserted with ID:', result.insertId);
-
-
-        // Pass the order data to the confirmation page 
-        res.render('confirm', { order: order });
-
-
-    } catch(err) {
-
-
-        // If ANYTHING goes wrong, this runs
-        console.error('Error inserting order:', err);
-
-
-        // Check if it's a duplicate email error
-        if (err.code === 'ER_DUP_ENTRY') {
-
-
-            res.status(409).send('An order with this email already exists.');
-
-
-        } else {
-
-
-            // Generic error message for other issues
-            res.status(500).send('Sorry, there was an error processing your order. Please try again.');
-        }
-    }
+    // Display the confirmation page
+    res.render('confirm', { order });
 });
 
-
-
-
-    // //Add an admin route
-    // app.get('/admin', (req, res) => {
-    //     res.render('admin', {orders});
-    // });
-    // Admin route - displays all orders from the database
-
-//NEW ADMIN ROUTE
-// orders[0] contains data, orders[1] contains metadata
-
-
+// Add an admin route
 app.get('/admin', async(req, res) => {
-
-
     try {
-        // Fetch all orders from the database, newest first
-        const [orders] = await pool.query('SELECT * FROM orders ORDER BY timestamp DESC');
-	    console.log(orders);
-
-
-        // Render the admin page with the orders
+        
+        // Array destructuring gives us just the data from the query
+        const [orders] = await 
+            pool.query('SELECT * FROM orders ORDER BY timestamp DESC');
+        console.log(orders);
         res.render('admin', { orders });
-
-
     } catch(err) {
-
-
-        console.error('Database error:', err);
-        res.status(500).send('Database error: ' + err.message);
+        console.error('Database error: ', err);
+        res.status(500).send('Database error occurred.');
     }
-
-
 });
 
-
-
-
-//Start the server on the designated PORT
+// Start the server on the designated port
 app.listen(PORT, () => {
-
     console.log(`Server is running at 
         http://localhost:${PORT}`);
-
 });
