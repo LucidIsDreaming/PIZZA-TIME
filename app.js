@@ -68,52 +68,52 @@ const orders =[];
 //Enable static file serving
 app.use(express.static('public'));
 
-// Database test - http://localhost:3000/db-test to test this route
-app.get('/db-test', async(req, res) => {
+// // Database test - http://localhost:3000/db-test to test this route
+// app.get('/db-test', async(req, res) => {
 
 
-    /* 
-     * 'async' tells JavaScript that this function will do asynchronous work
-     * Asynchronous means "it takes time to complete" (like waiting for
-     * database). By marking it 'async', we can use 'await' inside it
-     * 
-     * 'await' keyword means "pause here and wait for the database to respond"
-     * pool.query() returns a Promise ("I'll get back to you!")
-     * 'await' waits for the Promise to complete before moving on
-     * 
-     * pool.query() returns an ARRAY with 2 items:
-     *   [0] = the actual data rows from the database
-     *   [1] = metadata about the query (field names, types, etc.)
-     * So 'orders[0]' contains just the data rows, like:
-     * [ {id: 1, customer: 'John', pizza: 'Pepperoni'}, 
-     *   {id: 2, customer: 'Jane', pizza: 'Veggie'} ]
-     */
+//     /* 
+//      * 'async' tells JavaScript that this function will do asynchronous work
+//      * Asynchronous means "it takes time to complete" (like waiting for
+//      * database). By marking it 'async', we can use 'await' inside it
+//      * 
+//      * 'await' keyword means "pause here and wait for the database to respond"
+//      * pool.query() returns a Promise ("I'll get back to you!")
+//      * 'await' waits for the Promise to complete before moving on
+//      * 
+//      * pool.query() returns an ARRAY with 2 items:
+//      *   [0] = the actual data rows from the database
+//      *   [1] = metadata about the query (field names, types, etc.)
+//      * So 'orders[0]' contains just the data rows, like:
+//      * [ {id: 1, customer: 'John', pizza: 'Pepperoni'}, 
+//      *   {id: 2, customer: 'Jane', pizza: 'Veggie'} ]
+//      */
 
 
-    // try/catch block for error handling
-    try {
+//     // try/catch block for error handling
+//     try {
 
 
-        const orders = await pool.query('SELECT * FROM orders');
+//         const orders = await pool.query('SELECT * FROM orders');
 
 
-        // Send the orders data back to the browser as JSON
-        res.send(orders[0]);
+//         // Send the orders data back to the browser as JSON
+//         res.send(orders[0]);
 
 
-    } catch(err) {
+//     } catch(err) {
 
 
-        // If ANY error happened in the 'try' block, this code runs
-        // Log the error to the server console (for developers to see)
-        console.error('Database error:', err);
+//         // If ANY error happened in the 'try' block, this code runs
+//         // Log the error to the server console (for developers to see)
+//         console.error('Database error:', err);
 
 
-        // Send an error response to the browser
-        // status(500) means "Internal Server Error"
-        res.status(500).send('Database error: ' + err.message);
-    }
-});
+//         // Send an error response to the browser
+//         // status(500) means "Internal Server Error"
+//         res.status(500).send('Database error: ' + err.message);
+//     }
+// });
 
 
 //Define a default route ("/")
@@ -186,11 +186,14 @@ app.post('/submit-order', async(req, res) => {
         // req.body contains all the form fields (fname, lname, email, etc.)
         const order = req.body;
 
+        order.timestamp = new Date();
+        console.log(order)
+
 
         // Convert the toppings array into a comma-separated string
         // HTML checkboxes submit as an array, but MySQL stores as TEXT
         order.toppings = Array.isArray(order.toppings) ? 
-	  order.toppings.join(", ") : "";
+	        order.toppings.join(", ") : "";
 
 
         // Log the order to the server console (helpful for debugging)
@@ -223,6 +226,9 @@ app.post('/submit-order', async(req, res) => {
         // Execute the query with the parameters
         const [result] = await pool.execute(sql, params);
 
+        // Get the id from newly inserted row
+        order.id = result.insertId;
+        console.log("A new row awas inserted with ID " + order.id);
 
         // Optional: You can access the newly inserted row's ID
         console.log('Order inserted with ID:', result.insertId);
@@ -273,12 +279,12 @@ app.get('/admin', async(req, res) => {
 
     try {
         // Fetch all orders from the database, newest first
-        const orders = await pool.query('SELECT * FROM orders ORDER BY timestamp DESC');
-	  console.log(orders[0]);
+        const [orders] = await pool.query('SELECT * FROM orders ORDER BY timestamp DESC');
+	    console.log(orders);
 
 
         // Render the admin page with the orders
-        res.render('admin', { orders: orders[0] });
+        res.render('admin', { orders });
 
 
     } catch(err) {
