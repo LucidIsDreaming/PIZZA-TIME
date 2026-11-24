@@ -9,12 +9,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Import express-session
-// express-session lets the server "remember" users between requests
 import session from 'express-session';
 
-//Import server-side validation
-import { validateForm } from './validation.js';
-
+// Import server-side validation function
+import {validateForm} from './validation.js'; 
 
 // Create a connection pool
 const pool = mysql2.createPool({
@@ -28,20 +26,6 @@ const pool = mysql2.createPool({
 // Create an instance of an
 // express application
 const app = express();
-
-// Define a port number for
-// our server to listen on
-const PORT = 3000;
-
-// Create an array to store orders
-const orders = [];
-
-// Enable static file serving
-app.use(express.static('public'));
-
-// Add "middleware" to allow the app to parse form data
-// Access form data through req.body
-app.use(express.urlencoded({ extended: true }));
 
 /* ==================== SESSION MIDDLEWARE ====================
  * A SESSION lets the server remember a user between requests.
@@ -79,6 +63,19 @@ function requireLogin(req, res, next) {
     }
 }
 
+// Define a port number for
+// our server to listen on
+const PORT = 3000;
+
+// Create an array to store orders
+const orders = [];
+
+// Enable static file serving
+app.use(express.static('public'));
+
+// Add "middleware" to allow the app to parse form data
+// Access form data through req.body
+app.use(express.urlencoded({ extended: true }));
 
 // Set view engine to EJS
 app.set('view engine', 'ejs');
@@ -108,56 +105,11 @@ app.get('/contact-us', (req, res) => {
     res.render('contact');
 });
 
-// Add a route to process a pizza order
-app.post('/submit-order', async(req, res) => {
-
-    // Create a JSON object to store order data
-    const order = req.body;
-    order.timestamp = new Date();
-    console.log(order);
-
-    //Validate the data on the *server*
-    const valid = validateForm(order);
-    if(!valid.isValid){ //if its not valid data
-        console.log(valid); //login
-        res.render('home', { errors: valid.errors }); //list of errors that validation found
-        return; //return stops the submit order method so the code below wont run
-    }
-
-    // Convert toppings array to a comma-delimited string
-    order.toppings = Array.isArray(order.toppings) ?
-        order.toppings.join(", ") : "";
-
-    // Define an SQL query to INSERT new order
-    const sql = `INSERT INTO orders (fname, lname, email,
-    size, method, toppings, comment)
-    VALUES(?, ?, ?, ?, ?, ?, ?)`;
-
-    // Create an array of parameters from order data
-    const params = [
-        order.fname,
-        order.lname,
-        order.email,
-        order.size,
-        order.method,
-        order.toppings,
-        order.comment
-    ];
-
-    // Execute the query
-    const [result] = await pool.execute(sql, params);
-
-    // Get the id from the newly inserted row
-    order.id = result.insertId;
-    console.log("A new row was inserted with ID " + order.id);
-
-    // Display the confirmation page
-    res.render('confirm', { order });
-});
-
+// Add a route for the login page
 // Display the login page - http://localhost:3000/login
 // We pass error: null because there is no error yet.
-// login.ejs checks "if (error)", so error must always be defined.
+// login.ejs checks "if (error)", so error must always 
+// be defined.
 app.get('/login', (req, res) => {
     res.render('login', { error: null });
 });
@@ -197,6 +149,60 @@ app.get('/logout', (req, res) => {
     });
 });
 
+// Add a route to process a pizza order
+app.post('/submit-order', async(req, res) => {
+
+    // Create a JSON object to store order data
+    const order = req.body;
+    order.timestamp = new Date();
+    console.log(order);
+
+    // Validate the data on the *server*
+    const valid = validateForm(order);
+    
+    if (!valid.isValid) {
+        console.log(valid);
+        res.render('home', { errors: valid.errors });
+        return;
+    }
+
+    // Convert toppings array to a comma-delimited string
+    order.toppings = Array.isArray(order.toppings) ?
+        order.toppings.join(", ") : "";
+
+    // Define an SQL query to INSERT new order
+    const sql = `INSERT INTO orders (fname, lname, email,
+    size, method, toppings, comment)
+    VALUES(?, ?, ?, ?, ?, ?, ?)`;
+
+    // Create an array of parameters from order data
+    // Set optional items to null if no value was input
+    const params = [
+        order.fname,
+        order.lname,
+        order.email || null,
+        order.size,
+        order.method,
+        order.toppings || null,
+        order.comment || null
+    ];
+
+    try {
+        // Execute the query
+        const [result] = await pool.execute(sql, params);
+
+        // Get the id from the newly inserted row
+        order.id = result.insertId;
+        console.log("A new row was inserted with ID " + order.id);
+
+        // Display the confirmation page
+        res.render('confirm', { order });
+    } catch (err) {
+        console.error('Database error: ', err);
+        res.status(500).send(`Sorry, we could not 
+            save your order. Please try again.`);
+    }
+});
 
 // Add an admin route
 app.get('/admin', requireLogin, async(req, res) => {

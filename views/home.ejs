@@ -1,139 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Pizza-Time</title>
-        <!-- Favicon -->
-        <link rel="icon" href= "images/PizzaAura.png">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poppa's Pizza</title>
 
-        <!-- Stylesheet-->
-        <link rel = "stylesheet" href = "styles/pizza-styles.css">
+    <!-- Favicon -->
+    <link rel="icon" href="images/pizza-icon.jpg">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles/pizza-styles.css">
 
-        <!--JavaScript-->
-        <script src="scripts/pizza.js" defer></script>
-
-    </head>
-    <body> 
-
-        <div id ="main">
-            <!--Main Header-->
-            <div id = "header">
-                <img src="images/krusty-pizza.png">
-                <h1>Welcome to Pizza-Time!</h1>
-                <h2>Our Menu</h2>
-                <hr>
-                <p>We make the best pizza ever! Visit us today</p>
-                <a id = "contact-button" class = "main-button" href = "/contact-us" role = "button"> Contact Us!</a>
-                </hr>
-            </div>
-
-            <!-- Display server-side error messages -->
-             <% if (errors) { %>
-                <% errors.forEach(error => { %>
-                    <p><%= error %></p>
-                <% }) %>
-             <% } %>
-
-
-            <form id = "pizza-form" action = "/submit-order" method = "post">
-                <fieldset>
-                    <legend>Contact Info</legend>
-
-                    <label for ="fname">First Name:</label>
-                    <input type = "text" id="fname" name = "fname">
-
-                    <span class= "err" id= "err-fname">First name is required</span>
-
-                    <label for = "lname">Last Name:</label>
-                    <input type = "text" id = "lname" name = "lname">
-
-                    <span class= "err" id= "err-lname">Last name is required</span>
-
-                    <label for = "email">Email (not required):</label>
-                    <input type = "email" id = "email" name = "email">
-
-                    <span class= "err" id= "err-email">Missing email (not required)</span>
-                    
-                </fieldset>
-        
-                <!-- Pickup or Delivery RADIO BUTTONS-->
-                <fieldset> 
-                    <legend>Select Pickup or Delivery</legend>
-
-                    <span class="err" id="err-method">Select pickup or delivery</span>
-                        <!--RADIO IS BUTTONS-->
-                    <label for ="pickup">
-                        <input type = "radio" id = "pickup" name = "method" value = 
-                        "pickup">
-                        pickup
-                    </label>
-
-                    <label for ="delivery">
-                        <input type = "radio" id = "delivery" name = "method" value = 
-                        "delivery">
-                        delivery
-                    </label>
-                </fieldset>
-
-                <!-- Toppings CHECKBOX-->
-                <fieldset>
-                    <legend>Select Toppings</legend>
-
-                    <label for = "plain-cheese">
-                            <input type="checkbox" id="plain-cheese"
-                            name = "toppings[]" value ="plain-cheese">
-                            Plain Cheese
-                    </label>
-
-                    <label for = "pepperoni">
-                            <input type="checkbox" id="pepperoni"
-                            name = "toppings[]" value ="pepperoni">
-                            Pepperoni
-                    </label>
-
-                    <label for = "bacon">
-                            <input type="checkbox" id="bacon"
-                            name = "toppings[]" value ="bacon">
-                            Bacon
-                    </label>
-
-                    <label for = "olives">
-                            <input type="checkbox" id="olives"
-                            name = "toppings[]" value ="olives">
-                            Olives
-                    </label>
-
-                </fieldset>
-
-                <!-- Pizza Size OPTION VALUE DROPDOWN-->
-                <fieldset>
-                    <legend>Select Pizza Size</legend>
-
-                    <span class="err" id="err-size">Select a pizza size</span>
-
-                    <select id = "size" name = "size">
-                        <option value = "none">-- Select a Size --</option>
-
-                        <option value = "small">Small</option>
-
-                        <option value = "medium">Medium</option>
-                        
-                        <option value = "large">Large</option>
-                    </select>
-                </fieldset>
-
-                <!-- Comment field -->
-                <label for = "comment"> Comments</label>
-                <textarea rows = "5" id="comment" name = "comment"></textarea>
-
-
-                <!--Order Button-->
-                <!--<a id = "confirm-button" class = "main-button" href = "/confirm-order" role = "button"> Place an Order </a>-->
-                <button type = "submit" id = "order-button">Place Order</button>
-
-            </form>
-
+    <!-- JavaScript -->
+    <script src="scripts/pizza.js" defer></script>
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <img src="images/pizza-guy.jpg" alt="Pizza Guy">
+            <h1>Poppa's Pizza</h1>
+            <h2>Serving GRC students for 50 years!</h2>
+            <hr>
+            <p>We make the best pizza ever. Visit us today.</p>
+            <a id="contact-button" href="/contact-us" role="button">Contact Us</a>
         </div>
+
+        <!-- Display server-side error messages -->
+        <% if (errors) { %>
+            <% errors.forEach(error => { %>
+                <p><%= error %></p>
+            <% }) %>
+        <% } %>
+
+
+        <form id="pizza-form" action="/submit-order" method="post">
+
+            <!-- Contact Info -->
+            <fieldset>
+                <legend>Contact Info</legend>
+                
+                <label for="fname">First Name:</label>
+                <input type="text" id="fname" name="fname">
+                <span class="err" id="err-fname">First name is required</span>
+                
+                <label for="lname">Last Name:</label>
+                <input type="text" id="lname" name="lname">
+                <span class="err" id="err-lname">Last name is required</span>
+  
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email">
+            </fieldset>
+
+            <!-- Pickup or Delivery -->
+            <fieldset>
+                <legend>Select Pickup or Delivery</legend>
+                <span class="err" id="err-method">Select pickup or delivery</span>
+
+                <label for="pickup">
+                    <input type="radio" id="pickup" name="method" value="pickup">
+                    Pickup
+                </label>
+                <label for="delivery">
+                    <input type="radio" id="delivery" name="method" value="delivery">
+                    Delivery
+                </label>
+            </fieldset>
+
+            <!-- Select Toppings -->
+            <fieldset>
+                <legend>Select Toppings</legend>
+                <label for="pepperoni">
+                    <input type="checkbox" id="pepperoni" 
+                           name="toppings[]" value="pepperoni">
+                    Pepperoni
+                </label>
+                <label for="olives">
+                    <input type="checkbox" id="olives" 
+                           name="toppings[]" value="olives">
+                    Olives
+                </label>
+                <label for="mushrooms">
+                    <input type="checkbox" id="mushrooms" 
+                           name="toppings[]" value="mushrooms">
+                    Mushrooms
+                </label>
+            </fieldset>            
+
+            <!-- Select Pizza Size -->
+            <fieldset>
+                <legend>Select Pizza Size</legend>
+                <span class="err" id="err-size">Select a size</span>
+
+                <select id="size" name="size">
+                    <option value="none">-- Select a Size --</option>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                </select>
+            </fieldset>
+
+            <!-- Comment field -->
+            <label for="comment">Comments</label>
+            <textarea rows="5" id="comment" name="comment"></textarea>
+
+            <!-- Order button -->
+            <button type="submit" id="order-button">Place Order</button>
+        </form>
+    </div>
     </body>
 </html>

@@ -2,22 +2,34 @@ export function validateForm(data) {
     console.log("Validating...");
     console.log(data);
 
-    //store error messages in an array
+    // Store error messages in an array
     const errors = [];
 
-    //validate method (Pickup or Delivery)
+    // Validate method (Pickup or delivery)
     const validMethods = ['pickup', 'delivery'];
     if(!validMethods.includes(data.method)) {
-        errors.push("Method must be pickup or delivery");
+        errors.push("Method must be pickup or delivery.");
     }
 
-    //validate Size
-    const validSize = ['small', 'medium', 'large'];
-    if(!validSize.includes(data.size)) {
-        errors.push("Size must be small, medium, or large");
+    // Validate size (small, medium, large)
+    const validSizes = ['small', 'medium', 'large'];
+    if(!validSizes.includes(data.size)) {
+        errors.push("Invalid size selected.");
     }
 
-    //return result
+    // Validate toppings
+    const validToppings = ['pepperoni', 'mushrooms', 'olives'];
+    if (Array.isArray(data.toppings)) {
+
+        for (const topping of data.toppings) {
+            if (!validToppings.includes(topping)) {
+                errors.push("Invalid topping selected");
+                break;
+            }
+        }
+    }
+
+    // Return result
     console.log(errors);
     return {
         isValid: errors.length === 0,
