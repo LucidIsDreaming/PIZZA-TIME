@@ -12,6 +12,9 @@ dotenv.config();
 // express-session lets the server "remember" users between requests
 import session from 'express-session';
 
+//Import server-side validation
+import { validateForm } from './validation.js';
+
 
 // Create a connection pool
 const pool = mysql2.createPool({
@@ -112,6 +115,14 @@ app.post('/submit-order', async(req, res) => {
     const order = req.body;
     order.timestamp = new Date();
     console.log(order);
+
+    //Validate the data on the *server*
+    const valid = validateForm(order);
+    if(!valid.isValid){ //if its not valid data
+        console.log(valid); //login
+        res.render('home', { errors: valid.errors }); //list of errors that validation found
+        return; //return stops the submit order method so the code below wont run
+    }
 
     // Convert toppings array to a comma-delimited string
     order.toppings = Array.isArray(order.toppings) ?

@@ -28,10 +28,15 @@
                 </hr>
             </div>
 
-            <!--The Pizza Form (Contact Info, Toppings, Pizza Size)-->
+            <!-- Display server-side error messages -->
+             <% if (errors) { %>
+                <% errors.forEach(error => { %>
+                    <p><%= error %></p>
+                <% }) %>
+             <% } %>
+
 
             <form id = "pizza-form" action = "/submit-order" method = "post">
-                <!--Contact Info-->
                 <fieldset>
                     <legend>Contact Info</legend>
 
