@@ -97,7 +97,7 @@ app.get('/db-test', async(req, res) => {
 // Define a default route ("/")
 app.get('/', (req, res) => {
     //res.send('Welcome to Poppa\'s Pizza');
-    res.render('home');
+    res.render('home', { errors: null });
 });
 
 // Add a contact route to display a contact view page
